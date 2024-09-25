@@ -1,7 +1,7 @@
 // app/api/todo/[id]/route.ts
 
 import { NextResponse } from 'next/server';
-import supabase from '../../../utils/supabase';
+import supabase from '../../../../utils/supabase';
 
 // 特定の Todo を取得
 export async function GET(request: Request, { params }: { params: { id: string } }) {
@@ -13,7 +13,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const { data: todo, error } = await supabase
       .from('todos')
       .select('*')
-      .eq('id', Number(params.id)) // id で絞り込み
+      .eq('id', Number(params.id)) 
       .single();
 
     if (error) {

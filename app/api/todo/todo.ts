@@ -1,7 +1,7 @@
 // app/api/todo.ts
 
 import { NextResponse } from 'next/server';
-import supabase from '../../utils/supabase';
+import supabase from '../../../utils/supabase';
 
 // Todo一覧取得
 export async function GET() {

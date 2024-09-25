@@ -19,11 +19,11 @@ export default function Home() {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        // Supabase から Todo 一覧を取得
+        // Supabase クライアントを直接使用して Todo 一覧を取得
         const { data, error } = await supabase
           .from('todos')
           .select('*')
-          .order('id', { ascending: true }); // id 昇順で取得
+          .order('id', { ascending: true }); 
 
         if (error) {
           throw error;
