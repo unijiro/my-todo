@@ -60,6 +60,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
       <p>終了日付: {end_date || '未設定'}</p>
       <p>ステータス: {status || '未設定'}</p>
       <p>説明文: {description || '未設定'}</p>
+      <p>todo作成時: {created_at}</p>
     </li>
   );
 };
