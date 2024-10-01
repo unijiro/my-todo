@@ -8,6 +8,10 @@ interface Todo {
   title: string;
   completed: boolean;
   created_at: string;
+  start_date: string | null; // 開始日付（オプション）
+  end_date: string | null;   // 終了日付（オプション）
+  status: string | null;     // ステータス（オプション）
+  description: string | null; // 説明文（オプション）
 }
 
 interface TodoListProps {
@@ -22,9 +26,8 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onToggleCompleted, onDelete 
       {todos.map((todo) => ( 
         <TodoItem 
           key={todo.id}
-          id={todo.id}
-          title={todo.title}
-          completed={todo.completed}
+          // スプレッド構文を使用して、todo の全てのプロパティを TodoItem に渡す
+          {...todo} 
           onToggleCompleted={onToggleCompleted} 
           onDelete={onDelete} 
         />

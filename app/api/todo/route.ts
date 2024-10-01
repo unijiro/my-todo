@@ -7,7 +7,7 @@ import supabase from '../../../utils/supabase';
 export async function GET() {
   try {
     const { data: todos, error } = await supabase
-      .from('todos')
+      .from('new_todo') // テーブル名を new_todo に変更
       .select('*')
       .order('id', { ascending: true });
 
@@ -26,7 +26,7 @@ export async function GET() {
 // Todo新規作成
 export async function POST(request: Request) {
   try {
-    const { title } = await request.json();
+    const { title, start_date, end_date, status, description } = await request.json(); // 追加
 
     // title のバリデーション
     if (!title || typeof title !== 'string') {
@@ -34,8 +34,8 @@ export async function POST(request: Request) {
     }
 
     const { data: newTodo, error } = await supabase
-      .from('todos')
-      .insert({ title, completed: false })
+      .from('new_todo') // テーブル名を new_todo に変更
+      .insert({ title, completed: false, start_date, end_date, status, description }) // 追加
       .select()
       .single();
 

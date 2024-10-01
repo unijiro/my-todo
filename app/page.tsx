@@ -1,14 +1,19 @@
+// page.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import AddTodoForm from './components/AddTodoForm';
 import TodoList from './components/TodoList';
 import supabase from '../utils/supabase';
 
-interface Todo {
+export interface Todo {
   id: number;
   title: string;
   completed: boolean;
-  created_at: string; 
+  created_at: string;
+  start_date: string | null; 
+  end_date: string | null;
+  status: string | null;
+  description: string | null;
 }
 
 export default function Home() {
@@ -19,9 +24,9 @@ export default function Home() {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        // Supabase クライアントを直接使用して Todo 一覧を取得
+        // Supabase から Todo 一覧を取得 (テーブル名を new_todo に変更)
         const { data, error } = await supabase
-          .from('todos')
+          .from('new_todo') 
           .select('*')
           .order('id', { ascending: true }); 
 
@@ -41,23 +46,24 @@ export default function Home() {
     fetchTodos();
   }, []);
 
-  const handleAddTodo = async (newTitle: string) => {
+  const handleAddTodo = async (newTodo: Todo) => { 
     try {
-      // Supabase に新しい Todo を追加
+      // Supabase に新しい Todo を追加 (テーブル名を new_todo に変更)
       const { data, error } = await supabase
-        .from('todos')
-        .insert({ title: newTitle, completed: false }) 
-        .select() // 追加したデータを返すようにする
-        .single(); // 1レコードのみを返すようにする
+        .from('new_todo') 
+        .insert([newTodo]) 
+        .select() 
+        .single(); 
 
       if (error) {
         throw error;
       }
-
+      console.log("追加された Todo:", data);
       setTodos([...todos, data as Todo]); 
     } catch (error) {
       console.error('Error adding todo:', error);
       setError('Todo の追加に失敗しました。');
+      console.log("追加された Todo:", newTodo);
     }
   };
 
@@ -68,9 +74,9 @@ export default function Home() {
 
       const updatedTodo = { ...todoToUpdate, completed: !todoToUpdate.completed };
 
-      // Supabase で Todo を更新
+      // Supabase で Todo を更新 (テーブル名を new_todo に変更)
       const { error } = await supabase
-        .from('todos')
+        .from('new_todo') 
         .update({ completed: updatedTodo.completed })
         .eq('id', id);
 
@@ -87,9 +93,9 @@ export default function Home() {
 
   const handleDeleteTodo = async (id: number) => {
     try {
-      // Supabase から Todo を削除
+      // Supabase から Todo を削除 (テーブル名を new_todo に変更)
       const { error } = await supabase
-        .from('todos')
+        .from('new_todo') 
         .delete()
         .eq('id', id);
 
@@ -120,3 +126,4 @@ export default function Home() {
     </div>
   );
 }
+

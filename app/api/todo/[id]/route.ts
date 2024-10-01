@@ -11,7 +11,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     const { data: todo, error } = await supabase
-      .from('todos')
+      .from('new_todo') // テーブル名を new_todo に変更
       .select('*')
       .eq('id', Number(params.id)) 
       .single();
@@ -44,13 +44,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return new NextResponse("Invalid id parameter", { status: 400 });
     }
 
-    const { title, completed } = await request.json();
+    const { title, completed, start_date, end_date, status, description } = await request.json(); // start_date, end_date, status, description を追加
 
-    // title または completed が更新される場合のみ更新処理を実行
-    if (title || completed !== undefined) {
+    // title, completed, start_date, end_date, status, description のいずれかが更新される場合のみ更新処理を実行
+    if (title || completed !== undefined || start_date || end_date || status || description) {
       const { error } = await supabase
-        .from('todos')
-        .update({ title, completed })
+        .from('new_todo') // テーブル名を new_todo に変更
+        .update({ title, completed, start_date, end_date, status, description }) // start_date, end_date, status, description を追加
         .eq('id', id);
 
       if (error) {
@@ -61,7 +61,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     // 更新後の Todo を取得して返す
     const { data: updatedTodo, error: selectError } = await supabase
-      .from('todos')
+      .from('new_todo') // テーブル名を new_todo に変更
       .select('*')
       .eq('id', id)
       .single();
@@ -95,7 +95,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     }
 
     const { error } = await supabase
-      .from('todos')
+      .from('new_todo') // テーブル名を new_todo に変更
       .delete()
       .eq('id', id);
 
