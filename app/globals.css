@@ -1,27 +1,88 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* globals.css */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Reset some default browser styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Set a base font family */
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Style headings */
+h1 {
+  font-weight: bold;
+  text-align: center; /* タイトルを中央寄せ */
+  margin-bottom: 20px;
+}
+
+/* Style the form container */
+form {
+  display: flex;
+  flex-direction: column; /* 入力フィールドを縦に並べる */
+  width: 500px;
+  margin: 0 auto; /* フォームを中央寄せ */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+/* Style form inputs and labels */
+input[type="text"],
+input[type="date"],
+textarea {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/* Style the submit button */
+button[type="submit"] {
+  background-color: #4CAF50; /* 緑色 */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* Style the todo list */
+ul {
+  list-style: none; /* リストのマーカーを消す */
+  width: 500px;
+  margin: 20px auto; /* リストを中央寄せ */
+  padding: 0;
+}
+
+li {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  align-items: center; /* 垂直方向に中央寄せ */
+}
+
+li p {
+  display: inline-block;
+  margin-right: 20px;
+}
+
+/* Style the delete button */
+li button {
+  background-color: #f44336; /* 赤色 */
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-left: auto; /* 削除ボタンを右端に配置 */
 }

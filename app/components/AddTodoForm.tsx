@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Todo } from '../page'; // Todo インターフェースをインポート
 import supabase from '../../utils/supabase';
 
+
 interface AddTodoFormProps {
   onAddTodo: (newTodo: Todo) => void; 
 }
@@ -46,12 +47,16 @@ const AddTodoForm: React.FC<AddTodoFormProps> = ({ onAddTodo }) => {
     e.preventDefault();
     if (title.trim() === '') return; 
 
+    const today = new Date();
+    const formattedDate = new Intl.DateTimeFormat('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(today);
+    
+
     // onAddTodo に全てのプロパティを渡す
     onAddTodo({
       id:nextId++, 
       title, 
       completed: false, 
-      created_at: new Date().toISOString(), 
+      created_at: formattedDate, 
       start_date: startDate, 
       end_date: endDate, 
       status, 
