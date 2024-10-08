@@ -47,16 +47,12 @@ const AddTodoForm: React.FC<AddTodoFormProps> = ({ onAddTodo }) => {
     e.preventDefault();
     if (title.trim() === '') return; 
 
-    const today = new Date();
-    const formattedDate = new Intl.DateTimeFormat('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(today);
-    
-
     // onAddTodo に全てのプロパティを渡す
     onAddTodo({
       id:nextId++, 
       title, 
       completed: false, 
-      created_at: formattedDate, 
+      created_at: new Date().toISOString().split('T')[0], 
       start_date: startDate, 
       end_date: endDate, 
       status, 

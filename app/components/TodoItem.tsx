@@ -56,10 +56,10 @@ const TodoItem: React.FC<TodoItemProps> = ({
       <button onClick={handleDelete}>削除</button>
 
       {/* 新しいカラムの値を表示 */}
-      <p>開始日付: {start_date || '未設定'}</p>
-      <p>終了日付: {end_date || '未設定'}</p>
-      <p>ステータス: {status || '未設定'}</p>
-      <p>説明文: {description || '未設定'}</p>
+      <p>開始日付: {start_date || ' '}</p>
+      <p>終了日付: {end_date || ' '}</p>
+      <p>ステータス: {status || ' '}</p>
+      <p>説明文: {description || ' '}</p>
       <p>todo作成時: {created_at}</p>
     </li>
   );
