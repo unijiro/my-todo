@@ -19,6 +19,7 @@ const AddTodoForm: React.FC<AddTodoFormProps> = ({ onAddTodo }) => {
   const [endDate, setEndDate] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
+  let today = new Date();
 
   useEffect(() => {
     const initializeNextId = async () => {
@@ -52,7 +53,7 @@ const AddTodoForm: React.FC<AddTodoFormProps> = ({ onAddTodo }) => {
       id:nextId++, 
       title, 
       completed: false, 
-      created_at: new Date().toISOString().split('T')[0], 
+      created_at: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`, 
       start_date: startDate, 
       end_date: endDate, 
       status, 
