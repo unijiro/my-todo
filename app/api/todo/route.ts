@@ -2,7 +2,6 @@
 
 import { NextResponse } from 'next/server';
 import supabase from '../../../utils/supabase';
-import { put } from '@vercel/blob';
 
 // Todo一覧取得
 export async function GET() {

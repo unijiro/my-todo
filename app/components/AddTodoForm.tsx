@@ -21,11 +21,9 @@ const AddTodoForm: React.FC<AddTodoFormProps> = ({ onAddTodo }) => {
   const [description, setDescription] = useState<string | null>(null);
 
   function getFormattedDate(): string {
-    let today = new Date();
+    const today = new Date();
     return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
   }
-
-  let today = getFormattedDate();
 
   useEffect(() => {
     const initializeNextId = async () => {
@@ -59,7 +57,7 @@ const AddTodoForm: React.FC<AddTodoFormProps> = ({ onAddTodo }) => {
       id:nextId++, 
       title, 
       completed: false, 
-      created_at: today.substring(0, 10), 
+      created_at: getFormattedDate(), 
       start_date: startDate, 
       end_date: endDate, 
       status, 
