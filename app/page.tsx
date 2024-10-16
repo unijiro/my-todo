@@ -1,9 +1,10 @@
 // page.tsx
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AddTodoForm from './components/AddTodoForm';
 import TodoList from './components/TodoList';
 import supabase from '../utils/supabase';
+import type { PutBlobResult } from '@vercel/blob';
 
 export interface Todo {
   id: number;
@@ -20,6 +21,10 @@ export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // pics
+  const inputFileRef = useRef<HTMLInputElement>(null);
+  const [blob, setBlob] = useState<PutBlobResult | null>(null);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -110,6 +115,8 @@ export default function Home() {
     }
   };
 
+  
+
   if (error) {
     return <div>エラー: {error}</div>;
   }
@@ -122,6 +129,41 @@ export default function Home() {
     <div>
       <h1>Todo リスト</h1>
       <AddTodoForm onAddTodo={handleAddTodo} />
+      <>
+      <form
+        onSubmit={async (event) => {
+          event.preventDefault();
+
+          if (!inputFileRef.current?.files) {
+            throw new Error("No file selected");
+          }
+
+          const file = inputFileRef.current.files[0];
+
+          const response = await fetch(
+            `/api/pics?filename=${file.name}`,
+            {
+              method: 'POST',
+              body: file,
+            },
+          );
+
+          const newBlob = (await response.json()) as PutBlobResult;
+
+          setBlob(newBlob);
+        }}
+      >
+        <input name="file" ref={inputFileRef} type="file" required />
+        <button type="submit">Upload</button>
+      </form>
+      {blob && (
+        <div>
+          Blob url: <a href={blob.url}>{blob.url}</a>
+        </div>
+      )}
+    </>
+
+
       <TodoList todos={todos} onToggleCompleted={handleToggleCompleted} onDelete={handleDeleteTodo} />
     </div>
   );
