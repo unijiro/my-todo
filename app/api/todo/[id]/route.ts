@@ -96,7 +96,16 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const { title, completed, start_date, end_date, status, description } = await request.json();
 
     // 更新するフィールドを動的に構築
-    const updates: any = {};
+    interface Updates {
+      title?: string;
+      completed?: boolean;
+      start_date?: string; 
+      end_date?: string;
+      status?: string;
+      description?: string;
+    }
+
+    const updates: Updates = {};
     if (title) updates.title = title;
     if (completed !== undefined) updates.completed = completed;
     if (start_date) updates.start_date = start_date;
