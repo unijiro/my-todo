@@ -82,6 +82,66 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
+export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+  try {
+    if (!params.id) {
+      return new NextResponse("Missing id parameter", { status: 400 });
+    }
+
+    const id = parseInt(params.id);
+    if (isNaN(id)) {
+      return new NextResponse("Invalid id parameter", { status: 400 });
+    }
+
+    const { title, completed, start_date, end_date, status, description } = await request.json();
+
+    // 更新するフィールドを動的に構築
+    const updates: any = {};
+    if (title) updates.title = title;
+    if (completed !== undefined) updates.completed = completed;
+    if (start_date) updates.start_date = start_date;
+    if (end_date) updates.end_date = end_date;
+    if (status) updates.status = status;
+    if (description) updates.description = description;
+
+    // 更新するフィールドがある場合のみ更新処理を実行
+    if (Object.keys(updates).length > 0) {
+      const { error } = await supabase
+        .from('new_todo')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error updating todo in Supabase:', error);
+        return new NextResponse("Internal Server Error", { status: 500 });
+      }
+    } else {
+      return new NextResponse("No fields to update", { status: 400 });
+    }
+
+    // 更新後の Todo を取得して返す
+    const { data: updatedTodo, error: selectError } = await supabase
+      .from('new_todo')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (selectError) {
+      console.error('Error fetching updated todo from Supabase:', selectError);
+      return new NextResponse("Internal Server Error", { status: 500 });
+    }
+
+    if (!updatedTodo) {
+      return new NextResponse("Todo not found", { status: 404 });
+    }
+
+    return NextResponse.json(updatedTodo);
+  } catch (error) {
+    console.error('Error updating todo:', error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+
 // Todo を削除
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
