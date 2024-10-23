@@ -120,10 +120,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         .update(updates)
         .eq('id', id);
 
-    //   if (error) {
-    //     console.error('Error updating todo in Supabase:', error);
-    //     return new NextResponse("Internal Server Error", { status: 500 });
-    //   }
+      if (error) {
+        console.error('Error updating todo in Supabase:', error);
+        return new NextResponse("Internal Server Error", { status: 500 });
+      }
     // } else {
     //   return new NextResponse("No fields to update", { status: 400 });
     // }
