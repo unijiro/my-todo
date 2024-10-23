@@ -114,19 +114,19 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     if (description) updates.description = description;
 
     // 更新するフィールドがある場合のみ更新処理を実行
-    if (Object.keys(updates).length > 0) {
-      const { error } = await supabase
-        .from('new_todo')
-        .update(updates)
-        .eq('id', id);
+    // if (Object.keys(updates).length > 0) {
+    //   const { error } = await supabase
+    //     .from('new_todo')
+    //     .update(updates)
+    //     .eq('id', id);
 
-      if (error) {
-        console.error('Error updating todo in Supabase:', error);
-        return new NextResponse("Internal Server Error", { status: 500 });
-      }
-    } else {
-      return new NextResponse("No fields to update", { status: 400 });
-    }
+    //   if (error) {
+    //     console.error('Error updating todo in Supabase:', error);
+    //     return new NextResponse("Internal Server Error", { status: 500 });
+    //   }
+    // } else {
+    //   return new NextResponse("No fields to update", { status: 400 });
+    // }
 
     // 更新後の Todo を取得して返す
     const { data: updatedTodo, error: selectError } = await supabase
