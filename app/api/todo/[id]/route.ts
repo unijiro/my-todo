@@ -115,10 +115,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     // 更新するフィールドがある場合のみ更新処理を実行
     // if (Object.keys(updates).length > 0) {
-    //   const { error } = await supabase
-    //     .from('new_todo')
-    //     .update(updates)
-    //     .eq('id', id);
+      const { error } = await supabase
+        .from('new_todo')
+        .update(updates)
+        .eq('id', id);
 
     //   if (error) {
     //     console.error('Error updating todo in Supabase:', error);
