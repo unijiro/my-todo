@@ -26,10 +26,24 @@ export async function GET() {
 // Todo新規作成
 export async function POST(request: Request) {
   try {
-    const { title, start_date, end_date, status, description } = await request.json(); // 追加
+    // interface post_type{
+    //   title: string,
+    //   start_date: string, 
+    //   end_date: string, 
+    //   status: string|undefined, 
+    //   description: string|undefined
+    // }
+    
+    const response = await request.json();
+
+    const title: string = response.title;
+    const start_date: string = response.start_date;
+    const end_date: string = response.end_date;
+    const status: string = response.status;
+    const description: string = response.description; // 追加
 
     // title のバリデーション
-    if (!title || typeof title !== 'string') {
+    if (title == '' || title == null) {
       return new NextResponse("Invalid title", { status: 400 });
     }
 
