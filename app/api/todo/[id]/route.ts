@@ -2,46 +2,46 @@
 
 import { NextResponse } from 'next/server';
 import supabase from '../../../../utils/supabase';
+import { Params } from 'next/server';
 
 // 特定の Todo を取得
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, params: Params) {
   try {
-    if (!params.id) {
-      return new NextResponse("Missing id parameter", { status: 400 });
+    const id = (await params).id; // paramsをawaitする
+
+    if (!id) {
+      return new NextResponse('Missing id parameter', { status: 400 });
     }
 
     const { data: todo, error } = await supabase
-      .from('new_todo') // テーブル名を new_todo に変更
+      .from('new_todo')
       .select('*')
-      .eq('id', Number(params.id)) 
+      .eq('id', Number(id))
       .single();
 
     if (error) {
       console.error('Error fetching todo from Supabase:', error);
-      return new NextResponse("Internal Server Error", { status: 500 });
+      return new NextResponse('Internal Server Error', { status: 500 });
     }
 
     if (!todo) {
-      return new NextResponse("Todo not found", { status: 404 });
+      return new NextResponse('Todo not found', { status: 404 });
     }
 
     return NextResponse.json(todo);
   } catch (error) {
     console.error('Error fetching todo:', error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
 
 // Todo を更新
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request,  params: Params ) {
   try {
-    if (!params.id) {
-      return new NextResponse("Missing id parameter", { status: 400 });
-    }
+    const id = (await params).id; // paramsをawaitする
 
-    const id = parseInt(params.id);
-    if (isNaN(id)) {
-      return new NextResponse("Invalid id parameter", { status: 400 });
+    if (!id) {
+      return new NextResponse('Missing id parameter', { status: 400 });
     }
 
     const { title, completed, start_date, end_date, status, description } = await request.json(); // start_date, end_date, status, description を追加
@@ -82,15 +82,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, params: Params) {
   try {
-    if (!params.id) {
-      return new NextResponse("Missing id parameter", { status: 400 });
-    }
+    const id = (await params).id; // paramsをawaitする
 
-    const id = parseInt(params.id);
-    if (isNaN(id)) {
-      return new NextResponse("Invalid id parameter", { status: 400 });
+    if (!id) {
+      return new NextResponse('Missing id parameter', { status: 400 });
     }
 
     const { title, completed, start_date, end_date, status, description } = await request.json();
@@ -152,15 +149,12 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 }
 
 // Todo を削除
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, params: Params) {
   try {
-    if (!params.id) {
-      return new NextResponse("Missing id parameter", { status: 400 });
-    }
+    const id = (await params).id; // paramsをawaitする
 
-    const id = parseInt(params.id);
-    if (isNaN(id)) {
-      return new NextResponse("Invalid id parameter", { status: 400 });
+    if (!id) {
+      return new NextResponse('Missing id parameter', { status: 400 });
     }
 
     const { error } = await supabase
