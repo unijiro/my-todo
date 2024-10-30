@@ -24,7 +24,9 @@ export default function Home() {
 
   // pics
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const [blob, setBlob] = useState<PutBlobResult | null>(null);
+  // const [blob, setBlob] = useState<PutBlobResult | null>(null);
+  // const [filename, setFilename] = useState('');
+  const [blobs, setBlobs] = useState<PutBlobResult[]>([]);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -115,6 +117,23 @@ export default function Home() {
     }
   };
 
+  const handleDelete = async (blobToDelete: PutBlobResult) => {
+    try {
+      const response = await fetch(`/api/pics?filename=${blobToDelete.pathname.split('/').pop()}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const message = `Error: ${response.status} ${response.statusText}`;
+        throw new Error(message);
+      }
+      console.log('File deleted successfully');
+      // Blobのリストから削除したBlobを削除
+      setBlobs(blobs.filter((blob) => blob.pathname !== blobToDelete.pathname));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   
 
   if (error) {
@@ -129,13 +148,18 @@ export default function Home() {
     <div>
       <h1>Todo リスト</h1>
       <AddTodoForm onAddTodo={handleAddTodo} />
-      <>
+      <TodoList
+        todos={todos}
+        onToggleCompleted={handleToggleCompleted}
+        onDelete={handleDeleteTodo}
+      />
+
       <form
         onSubmit={async (event) => {
           event.preventDefault();
 
           if (!inputFileRef.current?.files) {
-            throw new Error("No file selected");
+            throw new Error('No file selected');
           }
 
           const file = inputFileRef.current.files[0];
@@ -150,21 +174,23 @@ export default function Home() {
 
           const newBlob = (await response.json()) as PutBlobResult;
 
-          setBlob(newBlob);
+          setBlobs([...blobs, newBlob]); // Blobのリストに追加
         }}
       >
         <input name="file" ref={inputFileRef} type="file" required />
         <button type="submit">Upload</button>
       </form>
-      {blob && (
-        <div>
-          Blob url: <a href={blob.url}>{blob.url}</a>
-        </div>
-      )}
-    </>
 
-
-      <TodoList todos={todos} onToggleCompleted={handleToggleCompleted} onDelete={handleDeleteTodo} />
+      {/* Blobのリストを表示 */}
+      <h2>Images:</h2>
+      <ul>
+        {blobs.map((blob) => (
+          <li key={blob.pathname}>
+            <a href={blob.url}>{blob.url}</a>
+            <button onClick={() => handleDelete(blob)}>DELETE</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

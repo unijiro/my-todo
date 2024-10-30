@@ -42,6 +42,11 @@ export async function POST(request: Request) {
     const status: string = response.status;
     const description: string = response.description; // 追加
 
+    // title のバリデーション
+    if (title == '' || title == null) {
+      return new NextResponse("Invalid title", { status: 400 });
+    }
+
     const { data: newTodo, error } = await supabase
       .from('new_todo') // テーブル名を new_todo に変更
       .insert({ title, completed: false, start_date, end_date, status, description }) // 追加
