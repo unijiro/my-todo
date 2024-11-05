@@ -3,17 +3,20 @@
 import { NextResponse } from 'next/server';
 import supabase from '../../../../utils/supabase';
 
+
 // 特定の Todo を取得
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request) {
   try {
-    if (!params.id) {
+    const { id } = await request.json(); // await を削除
+
+    if (!id) {
       return new NextResponse("Missing id parameter", { status: 400 });
     }
 
     const { data: todo, error } = await supabase
-      .from('new_todo') // テーブル名を new_todo に変更
+      .from('new_todo')
       .select('*')
-      .eq('id', Number(params.id)) 
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -33,15 +36,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
 }
 
 // Todo を更新
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request) {
   try {
-    if (!params.id) {
-      return new NextResponse("Missing id parameter", { status: 400 });
-    }
+    const { id } = await request.json();
 
-    const id = parseInt(params.id);
-    if (isNaN(id)) {
-      return new NextResponse("Invalid id parameter", { status: 400 });
+    if (!id) {
+      return new NextResponse("Missing id parameter", { status: 400 });
     }
 
     const { title, completed, start_date, end_date, status, description } = await request.json(); // start_date, end_date, status, description を追加
@@ -82,15 +82,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request) {
   try {
-    if (!params.id) {
-      return new NextResponse("Missing id parameter", { status: 400 });
-    }
+    const { id } = await request.json();
 
-    const id = parseInt(params.id);
-    if (isNaN(id)) {
-      return new NextResponse("Invalid id parameter", { status: 400 });
+    if (!id) {
+      return new NextResponse("Missing id parameter", { status: 400 });
     }
 
     const { title, completed, start_date, end_date, status, description } = await request.json();
@@ -152,15 +149,12 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 }
 
 // Todo を削除
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request) {
   try {
-    if (!params.id) {
-      return new NextResponse("Missing id parameter", { status: 400 });
-    }
+    const { id } = await request.json();;
 
-    const id = parseInt(params.id);
-    if (isNaN(id)) {
-      return new NextResponse("Invalid id parameter", { status: 400 });
+    if (!id) {
+      return new NextResponse("Missing id parameter", { status: 400 });
     }
 
     const { error } = await supabase
