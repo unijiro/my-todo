@@ -53,6 +53,58 @@ button[type="submit"] {
   cursor: pointer;
 }
 
+/* 画像アップロード */
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.file-upload span {
+  background-color: #008CBA; /* 青色 */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.file-upload input[type="file"] {
+  display: none; /* ファイル選択ボタンを非表示 */
+}
+
+.image-list {
+  display: flex;
+  flex-wrap: wrap; /* 画像を折り返して表示 */
+  justify-content: center;
+}
+
+.image-item {
+  margin: 10px;
+  position: relative; /* 削除ボタンを配置するため */
+}
+
+.image-item img {
+  width: 200px;
+  height: 150px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #f44336; /* 赤色 */
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
 /* Style the todo list */
 ul {
   list-style: none; /* リストのマーカーを消す */

@@ -1,10 +1,11 @@
 // page.tsx
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import AddTodoForm from './components/AddTodoForm';
 import TodoList from './components/TodoList';
 import supabase from '../utils/supabase';
-import type { PutBlobResult } from '@vercel/blob';
+import { uploadStorage } from './storage';
+
 
 export interface Todo {
   id: number;
@@ -17,14 +18,16 @@ export interface Todo {
   description: string | null;
 }
 
+let pics_id =1;
+
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // pics
-  const inputFileRef = useRef<HTMLInputElement>(null);
-  const [blob, setBlob] = useState<PutBlobResult | null>(null);
+  const [images, setImages] = useState<{ path: string, preview: string }[]>([]);
+  const [ path, setPathName ] = useState<string | undefined>();
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -115,7 +118,66 @@ export default function Home() {
     }
   };
 
+  const handleUploadStorage = async (fileList: FileList | null) => {
+    if (!fileList || !fileList.length) return;
+    const file = fileList[0];
+    const fileExtension = file.name.split('.').pop(); // 拡張子を取得
+    const imageId = Date.now(); // IDを生成
+    const newFileName = `${imageId}.${fileExtension}`; // 新しいファイル名を作成
+
+    try {
+      const { path } = await uploadStorage({
+        fileList,
+        bucketName: "pics",
+      });
+    const { data } = supabase.storage.from("pics").getPublicUrl(`${path}`); 
+
+    if (data.publicUrl) {
+      const urlParts = data.publicUrl.split('/'); 
+      urlParts[urlParts.length - 1] = newFileName; // ファイル名を置き換え
+      const newPublicUrl = urlParts.join('/'); 
+
+      setPathName(newPublicUrl);
+      setImages([{ path: newPublicUrl, preview: newPublicUrl}]);
+    }
+
+    console.log(path);
+    console.log(data);
+    console.log(data.publicUrl);
+  } catch (error) {
+    console.log('Error uploading images:', error);
+    setError('画像のアップロードに失敗しました。');
+  }};
+
+  const handleDeleteImage = async (index: number) => {
+    try {
+      const imageToDelete = images[index];
   
+      // Supabase Storageから画像を削除
+      const { error } = await supabase.storage
+        .from("pics")
+        .remove([`${imageToDelete.path}`]);
+  
+      if (error) {
+        console.log('Error deleting image:', error);
+        setError('画像の削除に失敗しました。');
+        return;
+      }
+  
+      const updatedImages = [...images];
+      updatedImages.splice(index, 1);
+      setImages(updatedImages);
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      setError('画像の削除に失敗しました。');
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      images.forEach(image => URL.revokeObjectURL(image.preview));
+    };
+  }, [images]);
 
   if (error) {
     return <div>エラー: {error}</div>;
@@ -126,46 +188,57 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <h1>Todo リスト</h1>
-      <AddTodoForm onAddTodo={handleAddTodo} />
-      <>
-      <form
-        onSubmit={async (event) => {
-          event.preventDefault();
-
-          if (!inputFileRef.current?.files) {
-            throw new Error("No file selected");
-          }
-
-          const file = inputFileRef.current.files[0];
-
-          const response = await fetch(
-            `/api/pics?filename=${file.name}`,
-            {
-              method: 'POST',
-              body: file,
-            },
-          );
-
-          const newBlob = (await response.json()) as PutBlobResult;
-
-          setBlob(newBlob);
-        }}
-      >
-        <input name="file" ref={inputFileRef} type="file" required />
-        <button type="submit">Upload</button>
-      </form>
-      {blob && (
-        <div>
-          Blob url: <a href={blob.url}>{blob.url}</a>
-        </div>
-      )}
-    </>
-
-
-      <TodoList todos={todos} onToggleCompleted={handleToggleCompleted} onDelete={handleDeleteTodo} />
+    <div> 
+      <div> 
+        <h1>Todo リスト</h1>
+        <AddTodoForm onAddTodo={handleAddTodo} />  
+          <label htmlFor="file-upload"> 
+            <span>アップロード</span>
+            <input
+              id="file-upload"
+              name="file-upload"
+              type="file"
+              className="sr-only"
+              accept="image/png, image/jpeg"
+              onChange={(e) => {handleUploadStorage(e.target?.files)}}
+              multiple
+              aria-label="画像を選択" 
+            />
+          </label>
+          <div className="image-list"> 
+            {images.map((image, index) => (
+              <div key={index} className="image-item">
+                <img src={image.preview} alt="" width="200" height="150" />
+                <button onClick={() => handleDeleteImage(index)}>削除</button> 
+              </div>
+            ))}
+          </div>
+        <TodoList todos={todos} onToggleCompleted={handleToggleCompleted} onDelete={handleDeleteTodo} />
+      </div>
     </div>
   );
 }
+
+{/* <h2>Images:</h2>
+<label htmlFor="file-upload"> 
+  <span>アップロード</span>
+  <input
+    id="file-upload"
+    name="file-upload"
+    type="file"
+    className="sr-only"
+    accept="image/png, image/jpeg"
+    onChange={(e) => {handleUploadStorage(e.target?.files)}}
+    multiple
+    aria-label="画像を選択" 
+  />
+</label>
+<div className="image-list"> 
+  {images.map((image, index) => (
+    <div key={index} className="image-item">
+      <img src={image.preview} alt="" width="200" height="150" />
+      <button onClick={() => handleDeleteImage(index)}>削除</button> 
+    </div>
+  ))}
+</div> */}
 

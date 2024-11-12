@@ -1,42 +1,7 @@
+// app/api/pics/route.ts
+
 import { NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
-import { del as deleteBlob } from '@vercel/blob';
-
-export async function POST(request: Request): Promise<NextResponse> {
-  const { searchParams } = new URL(request.url);
-  const filename = searchParams.get('filename');
-
-  // ⚠️ The below code is for App Router Route Handlers only
-  if (filename === null || request.body === null) {
-    return NextResponse.json({ error: 'Filename is missing' }, { status: 400 }); // Bad Request
-  }
-
-  const blob = await put(filename, request.body, { access: 'public' });
-  return NextResponse.json(blob); 
-
-  // Here's the code for Pages API Routes:
-  // const blob = await put(filename, request, {
-  //   access: 'public',
-  // });
-
-}
-
-export async function DELETE(request: Request): Promise<NextResponse> {
-  const { searchParams } = new URL(request.url);
-  const filename = searchParams.get('filename');
-
-  if (filename === null) {
-    return NextResponse.json({ error: 'Filename is missing' }, { status: 400 });
-  }
-
-  try {
-    await deleteBlob(filename);
-    return NextResponse.json({ message: `File ${filename} deleted` });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to delete file' }, { status: 500 });
-  }
-}
+import supabase from '../../../utils/supabase';
 
 export async function GET(request: Request): Promise<NextResponse> {
   const { searchParams } = new URL(request.url);
@@ -62,8 +27,38 @@ export async function GET(request: Request): Promise<NextResponse> {
 }
 
 // The next lines are required for Pages API Routes only
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
+export const dynamic = 'force-dynamic'
+export async function POST(request: Request) {
+  try {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+
+    if (!file) {
+      return new NextResponse("No file uploaded", { status: 400 });
+    }
+
+    const { data, error } = await supabase.storage
+      .from('pics') // ストレージのバケット名を指定
+      .upload(file.name, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (error) {
+      console.error('Error uploading image to Supabase Storage:', error);
+      return new NextResponse("Internal Server Error", { status: 500 });
+    }
+
+    // 画像への公開URLを生成
+    const { data: publicUrlData} = supabase.storage
+      .from('pics')
+      .getPublicUrl(data.path);
+
+    
+
+    return NextResponse.json({ url: publicUrlData.publicUrl });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}

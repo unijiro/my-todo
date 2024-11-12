@@ -8,6 +8,7 @@ import supabase from '../../utils/supabase';
 interface AddTodoFormProps {
   onAddTodo: (newTodo: Todo) => void; 
 }
+
 let nextId = 1;
 
 
