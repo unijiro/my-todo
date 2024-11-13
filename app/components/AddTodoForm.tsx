@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Todo } from '../page'; // Todo インターフェースをインポート
 import supabase from '../../utils/supabase';
-import { uploadStorage } from '../storage';
+
 
 
 
@@ -27,10 +27,9 @@ const AddTodoForm: React.FC<AddTodoFormProps> = ({ onAddTodo }) => {
   const [images, setImages] = useState<{ path: string, preview: string }[] | null>([]);
   const [imageFiles, setImageFiles] = useState<FileList | null>(null);
 
-  const [error, setError] = useState<string | null>(null);
-
-
-  const today = new Date();
+  console.log(image_name);
+  console.log(images);
+  console.log(image_name);
 
   useEffect(() => {
     const initializeNextId = async () => {
@@ -72,6 +71,8 @@ const AddTodoForm: React.FC<AddTodoFormProps> = ({ onAddTodo }) => {
           const { data, error } = await supabase.storage
             .from('pics')
             .upload(`pics_folder/${fileName}`, file);
+
+            console.log(data);
 
           if (error) {
             throw error;

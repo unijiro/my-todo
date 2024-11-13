@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import AddTodoForm from './components/AddTodoForm';
 import TodoList from './components/TodoList';
 import supabase from '../utils/supabase';
-import { uploadStorage } from './storage';
 
 
 export interface Todo {
@@ -26,7 +25,8 @@ export default function Home() {
 
   // pics
   const [images, setImages] = useState<{ path: string, preview: string }[]>([]);
-  const [ path, setPathName ] = useState<string | undefined>();
+  console.log(setImages);
+
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -100,22 +100,18 @@ export default function Home() {
 
   const handleDeleteTodo = async (id: number) => {
 
-    try{  
+    const imageToDelete = images[id];
+  
       // Supabase Storageから画像を削除
       const { error } = await supabase.storage
         .from("pics")
         .remove([`${imageToDelete.path}`]);
-
-        if (error) {
-          throw error;
-        }
   
-
-    }catch(error) {
-      console.log('Error deleting image:', error);
-      setError('画像の削除に失敗しました。');
-    }
-
+      if (error) {
+        console.log('Error deleting image:', error);
+        setError('画像の削除に失敗しました。');
+        return;
+      }
 
     try {
       // Supabase から Todo を削除 (テーブル名を new_todo に変更)
@@ -135,61 +131,6 @@ export default function Home() {
     }
 
     
-  };
-
-  const handleUploadStorage = async (fileList: FileList | null) => {
-    if (!fileList || !fileList.length) return;
-    const file = fileList[0];
-    const fileExtension = file.name.split('.').pop(); // 拡張子を取得
-    const imageId = Date.now(); // IDを生成
-    const newFileName = `${imageId}.${fileExtension}`; // 新しいファイル名を作成
-
-    try {
-      const { path } = await uploadStorage({
-        fileList,
-        bucketName: "pics",
-      });
-    const { data } = supabase.storage.from("pics").getPublicUrl(`${path}`); 
-
-    if (data.publicUrl) {
-      const urlParts = data.publicUrl.split('/'); 
-      urlParts[urlParts.length - 1] = newFileName; // ファイル名を置き換え
-      const newPublicUrl = urlParts.join('/'); 
-
-      setPathName(newPublicUrl);
-      setImages([{ path: newPublicUrl, preview: newPublicUrl}]);
-    }
-
-    console.log(path);
-    console.log(data);
-    console.log(data.publicUrl);
-  } catch (error) {
-    console.log('Error uploading images:', error);
-    setError('画像のアップロードに失敗しました。');
-  }};
-
-  const handleDeleteImage = async (index: number) => {
-    try {
-      const imageToDelete = images[index];
-  
-      // Supabase Storageから画像を削除
-      const { error } = await supabase.storage
-        .from("pics")
-        .remove([`${imageToDelete.path}`]);
-  
-      if (error) {
-        console.log('Error deleting image:', error);
-        setError('画像の削除に失敗しました。');
-        return;
-      }
-  
-      const updatedImages = [...images];
-      updatedImages.splice(index, 1);
-      setImages(updatedImages);
-    } catch (error) {
-      console.error('Error deleting image:', error);
-      setError('画像の削除に失敗しました。');
-    }
   };
 
   useEffect(() => {
