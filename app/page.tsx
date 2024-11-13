@@ -16,9 +16,8 @@ export interface Todo {
   end_date: string | null;
   status: string | null;
   description: string | null;
+  image_name: string | null;
 }
-
-let pics_id =1;
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -100,6 +99,24 @@ export default function Home() {
   };
 
   const handleDeleteTodo = async (id: number) => {
+
+    try{  
+      // Supabase Storageから画像を削除
+      const { error } = await supabase.storage
+        .from("pics")
+        .remove([`${imageToDelete.path}`]);
+
+        if (error) {
+          throw error;
+        }
+  
+
+    }catch(error) {
+      console.log('Error deleting image:', error);
+      setError('画像の削除に失敗しました。');
+    }
+
+
     try {
       // Supabase から Todo を削除 (テーブル名を new_todo に変更)
       const { error } = await supabase
@@ -116,6 +133,8 @@ export default function Home() {
       console.error('Error deleting todo:', error);
       setError('Todo の削除に失敗しました。');
     }
+
+    
   };
 
   const handleUploadStorage = async (fileList: FileList | null) => {
@@ -192,7 +211,7 @@ export default function Home() {
       <div> 
         <h1>Todo リスト</h1>
         <AddTodoForm onAddTodo={handleAddTodo} />  
-          <label htmlFor="file-upload"> 
+          {/* <label htmlFor="file-upload"> 
             <span>アップロード</span>
             <input
               id="file-upload"
@@ -204,15 +223,7 @@ export default function Home() {
               multiple
               aria-label="画像を選択" 
             />
-          </label>
-          <div className="image-list"> 
-            {images.map((image, index) => (
-              <div key={index} className="image-item">
-                <img src={image.preview} alt="" width="200" height="150" />
-                <button onClick={() => handleDeleteImage(index)}>削除</button> 
-              </div>
-            ))}
-          </div>
+          </label> */}
         <TodoList todos={todos} onToggleCompleted={handleToggleCompleted} onDelete={handleDeleteTodo} />
       </div>
     </div>

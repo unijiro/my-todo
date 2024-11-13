@@ -25,12 +25,22 @@ h1 {
 form {
   display: flex;
   flex-direction: column; /* 入力フィールドを縦に並べる */
-  width: 500px;
+  width: 900px;
   margin: 0 auto; /* フォームを中央寄せ */
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #fff;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+label:not(:last-child) { /* 最後のラベル以外にmargin-bottomを追加 */
+  margin-bottom: 10px;
 }
 
 /* Style form inputs and labels */
@@ -41,7 +51,9 @@ textarea {
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 3px;
+  flex: 1;
 }
+
 
 /* Style the submit button */
 button[type="submit"] {
@@ -53,65 +65,16 @@ button[type="submit"] {
   cursor: pointer;
 }
 
-/* 画像アップロード */
-.file-upload {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.file-upload span {
-  background-color: #008CBA; /* 青色 */
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.file-upload input[type="file"] {
-  display: none; /* ファイル選択ボタンを非表示 */
-}
-
-.image-list {
-  display: flex;
-  flex-wrap: wrap; /* 画像を折り返して表示 */
-  justify-content: center;
-}
-
-.image-item {
-  margin: 10px;
-  position: relative; /* 削除ボタンを配置するため */
-}
-
-.image-item img {
-  width: 200px;
-  height: 150px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.delete-button {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background-color: #f44336; /* 赤色 */
-  color: white;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
 
 /* Style the todo list */
 ul {
   list-style: none; /* リストのマーカーを消す */
-  width: 1000px;
+  width: 900px;
   margin: 20px auto; /* リストを中央寄せ */
   padding: 0;
-}
+  display: table;
+  border-collapse: collapse;
+} 
 
 li {
   background-color: #fff;
@@ -119,15 +82,65 @@ li {
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  display: flex;
+  display: table-row;
   align-items: center; /* 垂直方向に中央寄せ */
 }
 
 li p {
-  display: inline-block;
   margin-right: 20px;
+  display: table-cell;
+  padding: 10px;
+  vertical-align: middle;
 }
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* 列幅を固定 */
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left; /* 必要に応じて調整 */
+}
+
+/* 各列の幅を指定 */
+th:nth-child(1) { width: 10%; } /* 完了 */
+th:nth-child(2) { width: 10%; } /* タイトル */
+th:nth-child(3) { width: 10%; } /* 削除 */
+th:nth-child(4) { width: 10%; } /* 開始日付 */
+th:nth-child(5) { width: 10%; } /* 終了日付 */
+th:nth-child(6) { width: 15%; } /* ステータス */
+th:nth-child(7) { width: 15%; } /* 説明文 */
+th:nth-child(8) { width: 10%; } /* 作成日時 */
+th:nth-child(9) { width: 15%; } /* 画像 */
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff; /* 例: 青色 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.custom-file-upload i {
+  margin-right: 5px;
+}
+
+.sr-only { 
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
 /* Style the delete button */
 li button {
   background-color: #f44336; /* 赤色 */
